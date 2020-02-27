@@ -1,16 +1,20 @@
 class Colourbox
 {
-   private int x, y;
+   private int x, y, lineX, lineY;
    private PImage img;
+   private color selected;
    
    public Colourbox(int px, int py, int w, int h)
    {
      img = createImage(w, h, HSB);
-     x = px; 
-     y = py;
+     lineX = x = px;
+     lineY = y = py;
      this.UpdateColours(200);
+     
+     print(w*h, "\n");
    }
    
+  
  
    public void Show()
    {
@@ -22,9 +26,28 @@ class Colourbox
      
      // colourbox
      image(img,x,y);  
+     
+     // selection crosshair
+     stroke(255);
+     line(lineX, y, lineX, y+img.height);
+     line(x, lineY, x+img.width, lineY);
+   }
+   
+   // sets crosshair to position of selected col, sets selected col from pixel data
+   public void SelectColour(int mx, int my)
+   {
+     lineX = mx;
+     lineY = my;
+     
+     int col = lineX - x;
+     int row = lineY - y;    
+     
+     // a bit janky, but it gets the job done..
+     selected = img.pixels[min(row*img.width + col, img.width*img.width-1)];
    }
    
    
+   // set the hue spectrum gradient to a new colour
    public void UpdateColours(float hue)
    {     
      
@@ -53,7 +76,10 @@ class Colourbox
        }
      }
      
-     // push updates from buffer to box!
+     // reselect colour
+     SelectColour(lineX,lineY);
+     
+     // push updates from buffer to box
      img.updatePixels();
      colorMode(RGB);
      

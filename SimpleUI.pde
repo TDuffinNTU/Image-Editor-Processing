@@ -717,27 +717,32 @@ class ImageButton extends ButtonBaseClass
   
   public ImageButton(String uiname, int x, int y, String labelString, String iconFile)
   {
-    super (uiname, x, y, labelString);
-    
-    
+    super (uiname, x, y, labelString);   
     UIComponentType = "ImageButton";   
     Icon = loadImage(iconFile);
-    setBounds(x,y,Icon.width,Icon.height);
-    
+    setBounds(x,y,Icon.width,Icon.height);    
   }
   
+  
   // same ui function
-   public void handleMouseEvent(String mouseEventType, int x, int y){
-    if( isInMe(x,y) && (mouseEventType.equals("mouseMoved") || mouseEventType.equals("mousePressed"))){
+   public void handleMouseEvent(String mouseEventType, int x, int y)
+   {
+    if( isInMe(x,y) && (mouseEventType.equals("mouseMoved") || mouseEventType.equals("mousePressed")))
+    {
       rollover = true;      
-    } else { rollover = false; }
-    
-    if( isInMe(x,y) && mouseEventType.equals("mouseReleased")){
-      UIEventData uied = new UIEventData(UIManagerName, UIComponentType, UILabel, mouseEventType, x,y);
-      handleUIEvent(uied);
+    } else 
+    { 
+      rollover = false;
     }
     
+    if( isInMe(x,y) && mouseEventType.equals("mouseReleased"))
+    {
+      UIEventData uied = new UIEventData(UIManagerName, UIComponentType, UILabel, mouseEventType, x,y);
+      handleUIEvent(uied);
+    }    
   }  
+  
+  
   public void drawMe()
   {    
        image(Icon,locX,locY);
@@ -749,6 +754,7 @@ class ImageButton extends ButtonBaseClass
          fill(0, 80); 
          rect(locX,locY,widgetWidth,widgetHeight);    
          overlayTimer++;
+         // overlay extra information after some time
          if (overlayTimer > overlayMinimum)
          {          
            int tX = mouseX;
@@ -762,13 +768,12 @@ class ImageButton extends ButtonBaseClass
            
            fill(255);
            text(s, tX, tY);       
-         }
-                 
+         }                 
        } else {      //not rolling over   
          overlayTimer=0;
-       }       
-        
+       }               
   }
+  
   
 }
 
