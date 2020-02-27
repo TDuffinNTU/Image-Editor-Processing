@@ -255,6 +255,12 @@ public class SimpleUI{
     }
     
     
+    public void setSliderHandleType(String uilabel, String t){
+      Widget w = getWidget(uilabel);
+      if( w.UIComponentType.equals("Slider") )  ((Slider)w).setHandleType(t);
+      
+    }
+    
     
     
     
@@ -1072,19 +1078,17 @@ class Menu extends Widget{
 //
 // calls back with value on  both release and drag
 
-class Slider extends Widget{
-
-  
+class Slider extends Widget{  
   public float currentValue  = 0.0;
   boolean mouseEntered = false;
   int textPad = 5;
   int textSize = 12;
   boolean rollover = false;
   
-  public String HANDLETYPE = "ROUND";
+  public String HANDLETYPE = "UPARROW";
   
   public Slider(String uiname, String label, int x, int y){
-    super(uiname,label,x,y,102,30); 
+    super(uiname,label,x,y,130,30); 
     UIComponentType = "Slider";
   }
   
@@ -1116,22 +1120,30 @@ class Slider extends Widget{
       UIEventData uied = new UIEventData(UIManagerName, UIComponentType, UILabel, mouseEventType, x,y);
       uied.sliderValue = val;
       handleUIEvent(uied);
-    }
-    
+    }    
   }
+  
   
   float getSliderValueAtMousePos(int pos){
     float val = map(pos, bounds.left, bounds.right, 0,1);
     return val;
   }
   
+  
   float getSliderValue(){
     return currentValue;
   }
   
+  
   void setSliderValue(float val){
    currentValue =  constrain(val,0,1);
   }
+  
+  void setHandleType(String type) 
+  {
+    HANDLETYPE = type;
+  }
+  
   
   boolean mouseLeave(PVector p){
      // is only true, if the mouse has been in the widget, has been depressed
@@ -1142,27 +1154,34 @@ class Slider extends Widget{
     return false;
   }
   
+  
   public void drawMe(){
     pushStyle();
-    stroke(0,0,0);
-    strokeWeight(1);
+    noStroke();
+    
     if(rollover){
       fill(SimpleUIWidgetRolloverColor);}
     else{
       fill(SimpleUIWidgetFillColor);
     }
+    
     rect(bounds.left, bounds.top,  bounds.getWidth(), bounds.getHeight());
     fill(SimpleUITextColor);
     textSize(textSize);
     text(this.UILabel, bounds.left+textPad, bounds.top+26);
+    
     int sliderHandleLocX = (int) map(currentValue,0,1,bounds.left, bounds.right);
-    sliderHandleLocX = (int)constrain(sliderHandleLocX, bounds.left+10, bounds.right-10 );
+    sliderHandleLocX = (int)constrain(sliderHandleLocX, bounds.left, bounds.right );
+    //sliderHandleLocX = (int)constrain(sliderHandleLocX, bounds.left+10, bounds.right-10 );
     stroke(127);
+    
     float lineHeight = bounds.top+ (bounds.getHeight()/2.0) - 5;
     line(bounds.left+5, lineHeight,  bounds.left+bounds.getWidth()-5, lineHeight);
+    
     stroke(0);
+    
     drawSliderHandle(sliderHandleLocX);
-    popStyle();
+    popStyle();    
   }
   
   void drawSliderHandle(int loc){
@@ -1178,11 +1197,13 @@ class Slider extends Widget{
      ellipse(loc, bounds.top + 10, 10,10);
     }
     if(HANDLETYPE.equals("UPARROW")) {
+      //triangle(loc, bounds.top + 15, loc,bounds.top - 2, loc, bounds.top + 15);
       triangle(loc-4, bounds.top + 15, loc,bounds.top - 2, loc+4, bounds.top + 15);
     }
     if(HANDLETYPE.equals("DOWNARROW")){
       triangle(loc-4, bounds.top + 5, loc,bounds.bottom + 2, loc+4, bounds.top + 5);
     }
+    
     popStyle();
   }
   

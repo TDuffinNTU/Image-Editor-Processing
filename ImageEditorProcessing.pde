@@ -1,7 +1,8 @@
 SimpleUI myUI;
 int bi = 10; // initial height bleed
 int bh = 40; 
-PImage colourbox;
+Colourbox colourbox;
+PImage rainbow;
 void setup()
 {
   size(1200,800);
@@ -16,8 +17,13 @@ void setup()
   myUI.addImageButton("Line",10,               setButtonY(6),"buttons/line.png");
   myUI.addImageButton("Dropper",10,            setButtonY(7),"buttons/dropper.png");  
   myUI.addImageButton("Rotate",10,             setButtonY(8),"buttons/rotate.png");  
+ 
   
-  colourbox = loadImage("colourbox.png"); 
+  colourbox = new Colourbox(width-139, 11, 128, 120); 
+  rainbow = loadImage("rainbow.png");
+  myUI.addSlider("HueSlider", width-140, 150);
+  myUI.setSliderHandleType("HueSlider", "NONE");
+  
   
 }
 
@@ -35,12 +41,20 @@ void draw()
   
   rect(0,0,50,height);
   rect(width-150,0,150,height);
-  image(colourbox, width - 140, 10);
+  colourbox.Show();
+  
   
   myUI.update();
+  image(rainbow, width-140, 150);
 }
 
 void handleUIEvent(UIEventData uied)
 {
-  uied.print(3);
+  uied.print(0);
+  
+  if (uied.eventIsFromWidget("HueSlider"))
+  {
+    float newHue = uied.sliderValue * 255f;
+    colourbox.UpdateColours(newHue);
+  }
 }
