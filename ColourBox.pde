@@ -1,4 +1,4 @@
-class Colourbox
+class Colourbox // TODO: Make this into SimpleUI widget (hello dev branch!)
 {
    private int x, y, lineX, lineY;
    private PImage img;
