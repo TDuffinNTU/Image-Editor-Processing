@@ -1,11 +1,12 @@
-class Colourbox 
+class ColourboxWidget //extends ImageButton // TODO: Make this into SimpleUI widget (hello dev branch!)
 {
   private int x, y, lineX, lineY;
   private PImage img;
   private color selected;
 
-  public Colourbox(int px, int py, int w, int h)
+  public ColourboxWidget(int px, int py, int w, int h)
   {
+    //super();
     img = createImage(w, h, HSB);
     lineX = x = px;
     lineY = y = py;
