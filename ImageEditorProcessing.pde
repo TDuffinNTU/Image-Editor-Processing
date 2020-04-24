@@ -5,22 +5,31 @@ Colourbox colourbox;
 ColourSwatch foreground, background;
 PImage rainbow;
 
+
 void setup()
 {
   size(1200, 800);
   myUI = new SimpleUI();
-
-  myUI.addImageButton("Draw Rectangle", 10, setButtonY(0), "buttons/rectangle.png");
-  myUI.addImageButton("Create Text", 10, setButtonY(1), "buttons/text.png");
-  myUI.addImageButton("Draw Bezier", 10, setButtonY(2), "buttons/bezier.png");
-  myUI.addImageButton("Gradient", 10, setButtonY(3), "buttons/gradient.png");
-  myUI.addImageButton("Select", 10, setButtonY(4), "buttons/select.png");
-  myUI.addImageButton("Transparency", 10, setButtonY(5), "buttons/transparency.png");
-  myUI.addImageButton("Line", 10, setButtonY(6), "buttons/line.png");
-  myUI.addImageButton("Dropper", 10, setButtonY(7), "buttons/dropper.png");  
-  myUI.addImageButton("Rotate", 10, setButtonY(8), "buttons/rotate.png");  
-  myUI.addImageButton("Colourbox", width-139, 11, "buttons/colourbox.png");
-
+  
+  String[] FileMenuItems = {"x", "y"};
+  myUI.addMenu("File", 50, 0, FileMenuItems);
+  
+  String[] EditMenuItems = {"",""};
+  myUI.addMenu("Edit", 130, 0, EditMenuItems);
+  
+  // Left side buttons
+  myUI.addImageButton("Draw Rectangle", 10, setButtonY(0), "buttons/rectangle.png", "LeftMenu", myUI);
+  myUI.addImageButton("Create Text", 10, setButtonY(1), "buttons/text.png", "LeftMenu", myUI);
+  myUI.addImageButton("Draw Bezier", 10, setButtonY(2), "buttons/bezier.png", "LeftMenu", myUI);
+  myUI.addImageButton("Gradient", 10, setButtonY(3), "buttons/gradient.png", "LeftMenu", myUI);
+  myUI.addImageButton("Select", 10, setButtonY(4), "buttons/select.png", "LeftMenu", myUI);
+  myUI.addImageButton("Transparency", 10, setButtonY(5), "buttons/transparency.png", "LeftMenu", myUI);
+  myUI.addImageButton("Line", 10, setButtonY(6), "buttons/line.png", "LeftMenu", myUI);
+  myUI.addImageButton("Dropper", 10, setButtonY(7), "buttons/dropper.png", "LeftMenu", myUI);  
+  myUI.addImageButton("Rotate", 10, setButtonY(8), "buttons/rotate.png", "LeftMenu", myUI);  
+  
+  // colourbox buttons
+  myUI.addImageButton("Colourbox", width-139, 11, "buttons/colourbox.png", "ColourBox", myUI);
   colourbox = new Colourbox(width-139, 11, 128, 128); 
   rainbow = loadImage("rainbow.png");
   myUI.addSlider("HueSlider", width-140, 150);
@@ -36,6 +45,8 @@ int setButtonY(int btn_order)
 {
   return bi + (btn_order * bh);
 }
+
+
 
 void draw()
 {
@@ -71,11 +82,14 @@ void handleUIEvent(UIEventData uied)
   }  
 }
 
+
+// Update foreground/background colour
 void updateColourSwatch()
 {
   if(foreground.selected) {
       foreground.setColour(colourbox.getColour());
     } else {
       background.setColour(colourbox.getColour());
+      
     }    
 }

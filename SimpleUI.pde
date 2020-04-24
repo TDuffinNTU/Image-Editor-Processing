@@ -26,6 +26,7 @@
 //
 
 
+
 public class SimpleUI {
 
   UIRect canvasRect;
@@ -138,8 +139,8 @@ public class SimpleUI {
     return b;
   }
 
-  public ButtonBaseClass addImageButton(String label, int x, int y, String iconFile) {
-    ButtonBaseClass b = new ImageButton(UIManagerName, x, y, label, iconFile);
+  public ButtonBaseClass addImageButton(String label, int x, int y, String iconFile, String radioGroup, SimpleUI manager) {
+    ButtonBaseClass b = new ImageButton(UIManagerName, x, y, label, iconFile, radioGroup, manager);
     widgetList.add(b);
     return b;
   }    
@@ -507,9 +508,9 @@ class Widget {
 
   // Color for UI components
   color SimpleUIBackgroundRectColor = color(230, 230, 240); // slightly purpley background rect Color for alternative UI's
-  color SimpleUIWidgetFillColor = color(200, 200, 200);// darker grey for butttons
-  color SimpleUIWidgetRolloverColor = color(215, 215, 215);// slightly lighter rollover Color
-  color SimpleUITextColor = color(0, 0, 0);
+  color SimpleUIWidgetFillColor = color(80);// darker grey for butttons
+  color SimpleUIWidgetRolloverColor = color(60);// slightly lighter rollover Color
+  color SimpleUITextColor = color(255);
 
 
   // should any widgets need to "talk" to other widgets (RadioButtons, Menus)
@@ -707,16 +708,16 @@ class ButtonBaseClass extends Widget {
 }
 
 //////////////////////////////////////////////////////////////////
-// Imagebutton // Implementation by Thomas Duffin (N0727751)
-class ImageButton extends ButtonBaseClass
+// ImageRADIObutton // Implementation by Thomas Duffin (N0727751)
+class ImageButton extends RadioButton
 {
   PImage Icon;
   int overlayTimer = 0;
   int overlayMinimum = 50;
 
-  public ImageButton(String uiname, int x, int y, String labelString, String iconFile)
+  public ImageButton(String uiname, int x, int y, String labelString, String iconFile, String radioGroup, SimpleUI manager)
   {
-    super (uiname, x, y, labelString);   
+    super (uiname, x, y, labelString, radioGroup, manager);   
     UIComponentType = "ImageButton";   
     Icon = loadImage(iconFile);
     setBounds(x, y, Icon.width, Icon.height);
@@ -724,10 +725,20 @@ class ImageButton extends ButtonBaseClass
 
   public void drawMe()
   {    
-    image(Icon, locX, locY);
-
-    pushStyle();     
-    noStroke();       
+    image(Icon, locX, locY); 
+    color selectedStrokeCol = color(80,100,255);
+    
+    pushStyle(); 
+    if (selected) 
+    {      
+      strokeWeight(2);      
+      stroke(selectedStrokeCol);
+    }
+    else 
+    {
+      noStroke();
+    }    
+     
     if (rollover) //rolling over
     {
       fill(0, 80); 
@@ -750,6 +761,8 @@ class ImageButton extends ButtonBaseClass
       }
     } else {      //not rolling over   
       overlayTimer=0;
+      noFill();
+      rect(locX, locY, widgetWidth, widgetHeight);    
     }
   }
 }
@@ -935,7 +948,8 @@ class Menu extends Widget {
 
   int textPad = 5;
   //String title;
-  int textSize = 12;
+  int textSize = 18;
+  
 
   int numItems = 0;
   SimpleUI parentManager;
@@ -945,10 +959,9 @@ class Menu extends Widget {
   ArrayList<String> itemList = new ArrayList<String>();
 
 
-
   public Menu(String uiname, String uilabel, int x, int y, String[] menuItems, SimpleUI manager)
   {
-    super(uiname, uilabel, x, y, 100, 20);
+    super(uiname, uilabel, x, y, 80, 25);
     parentManager = manager;
     UIComponentType = "Menu";
 
@@ -970,7 +983,7 @@ class Menu extends Widget {
 
   void drawTitle() {
     pushStyle();
-    stroke(0, 0, 0);
+    noStroke();
     if (rollover) {
       fill(SimpleUIWidgetRolloverColor);
     } else {
@@ -1028,7 +1041,7 @@ class Menu extends Widget {
     int topOfItems =this.locY + widgetHeight;
     float distDown = y - topOfItems;
     int itemNum = (int) distDown/widgetHeight;
-    fill(230, 210, 210);
+    fill(SimpleUIWidgetFillColor);
     rect(locX, topOfItems + itemNum*widgetHeight, widgetWidth, widgetHeight);
     popStyle();
   }
