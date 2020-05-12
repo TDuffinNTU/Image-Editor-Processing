@@ -14,7 +14,7 @@ class Colourbox
     //print(w*h, "\n");
   }
 
-  public void Show()
+  public void drawMe()
   {
     // borderbox
     pushStyle();

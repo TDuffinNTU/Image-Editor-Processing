@@ -42,15 +42,28 @@ public class SimpleUI {
   boolean pmousePressed = false;
   boolean pkeyPressed = false;
   String fileDialogPrompt = "";
+  
+  // enabled/disable to turn off/on menus
+  boolean isEnabled = true;
 
-  public SimpleUI() {
+  public SimpleUI(boolean enabled) {
     UIManagerName = "";
+    isEnabled = enabled;
   }
 
-  public SimpleUI(String uiname) {
+  public SimpleUI(String uiname, boolean enabled) {
     UIManagerName = uiname;
+    isEnabled = enabled;
   }
 
+  // enable and disable gettersetter
+  public void setEnabled(boolean _isEnabled) 
+  {
+    isEnabled = _isEnabled;
+  }
+  
+  public boolean getEnabled() {return isEnabled;}
+  public String getUIManagerName() {return UIManagerName; }
 
   ////////////////////////////////////////////////////////////////////////////
   // file dialogue
@@ -117,6 +130,9 @@ public class SimpleUI {
       handleUIEvent(uied);
     }
   }
+  
+  
+  
 
   public void drawCanvas() {
     if (canvasRect==null) return;
@@ -164,8 +180,8 @@ public class SimpleUI {
     return b;
   }
 
-  public ButtonBaseClass addColourSwatch(String uiname, int x, int y, SimpleUI manager, color defaultColour) {
-    ButtonBaseClass b = new ColourSwatch( uiname, x, y, manager, defaultColour);
+  public ColourSwatch addColourSwatch(String uiname, int x, int y, SimpleUI manager, color defaultColour) {
+    ColourSwatch b = new ColourSwatch( uiname, x, y, manager, defaultColour);
     widgetList.add(b);
     return b;
   }
@@ -371,6 +387,7 @@ public class SimpleUI {
   }
 
   void handleKeyEvent(char k, int kcode, String keyEventType) {
+
     for (Widget w : widgetList) {
       w.handleKeyEvent( k, kcode, keyEventType);
     }
@@ -378,6 +395,8 @@ public class SimpleUI {
 
 
   void update() {
+    
+    if(!isEnabled) { return; }
     checkForUserInputEvents();
 
     if ( backgroundRect != null ) {
@@ -507,7 +526,7 @@ class Widget {
   color SimpleUIAppBackgroundColor = color(240, 240, 240);// the light neutralgrey of the overall application surrounds
 
   // Color for UI components
-  color SimpleUIBackgroundRectColor = color(230, 230, 240); // slightly purpley background rect Color for alternative UI's
+  color SimpleUIBackgroundRectColor = color(80); // slightly purpley background rect Color for alternative UI's
   color SimpleUIWidgetFillColor = color(80);// darker grey for butttons
   color SimpleUIWidgetRolloverColor = color(60);// slightly lighter rollover Color
   color SimpleUITextColor = color(255);
@@ -598,19 +617,25 @@ class SimpleLabel extends Widget {
 
   int textPad = 5;
   String text;
-  int textSize = 12;
+  int textSize = 18;
   boolean displayLabel  = true;
 
   public SimpleLabel(String uiname, String uilable, int x, int y, String txt) {
     super(uiname, uilable, x, y, 100, 30);
     UIComponentType = "SimpleLabel";
-    this.text = txt;
+    this.text = txt;   
+    
+    pushStyle();
+    textSize(textSize);
+    widgetWidth = (int)textWidth(uilable) + textPad*2;
+    popStyle();
   }
 
   public void drawMe() {
     pushStyle();
-    stroke(100, 100, 100);
-    strokeWeight(1);
+    //stroke(100, 100, 100);
+    //strokeWeight(1);
+    noStroke();
     fill(SimpleUIBackgroundRectColor);
     rect(locX, locY, widgetWidth, widgetHeight);
 
@@ -628,11 +653,7 @@ class SimpleLabel extends Widget {
 
 
 
-    if ( displayString.length() < 20) {
-      textSize = 12;
-    } else { 
-      textSize = 9;
-    }
+    
     fill(SimpleUITextColor);  
     textSize(textSize);
     text(displayString, locX+textPad, locY+textPad, widgetWidth, widgetHeight);
@@ -655,14 +676,14 @@ class SimpleLabel extends Widget {
 class ButtonBaseClass extends Widget {
 
   int textPad = 5;
-  int textSize = 12;
+  int textSize = 16;
 
 
 
   public ButtonBaseClass(String uiname, int x, int y, String uilable) {
     super(uiname, uilable, x, y, 70, 30);
 
-    UIComponentType = "ButtonBaseClass";
+    UIComponentType = "ButtonBaseClass";   
   }
 
 
@@ -725,10 +746,10 @@ class ImageButton extends RadioButton
 
   public void drawMe()
   {    
+    pushStyle();
     image(Icon, locX, locY); 
-    color selectedStrokeCol = color(80,100,255);
-    
-    pushStyle(); 
+    color selectedStrokeCol = color(80,100,255);    
+   
     if (selected) 
     {      
       strokeWeight(2);      
@@ -746,15 +767,16 @@ class ImageButton extends RadioButton
       overlayTimer++;
       // overlay extra information after some time
       if (overlayTimer > overlayMinimum)
-      {          
+      {        
+        
         int tX = mouseX;
         int tY = mouseY;
         String s = UILabel;
-        textSize(12);
+        textSize(18);
         float tw = textWidth(s);
 
         fill(100);
-        rect(tX-2, tY-11, tw+4, 14);
+        rect(tX-2, tY-textSize, tw+4, 14);
 
         fill(255);
         text(s, tX, tY);
@@ -764,6 +786,7 @@ class ImageButton extends RadioButton
       noFill();
       rect(locX, locY, widgetWidth, widgetHeight);    
     }
+    popStyle();
   }
 }
 
@@ -1265,7 +1288,7 @@ class TextInputBox extends Widget {
 
   boolean rollover;
 
-  color textBoxBackground = color(235, 235, 255);
+  color textBoxBackground = color(100);
 
   public TextInputBox(String uiname, String uilabel, int x, int y, int maxNumChars) {
     super(uiname, uilabel, x, y, 100, 30);
@@ -1302,7 +1325,8 @@ class TextInputBox extends Widget {
   }
 
   void addCharacter(char k) {
-    if ( contents.length() < this.maxNumChars) {
+    if ( textWidth(contents + k) < widgetWidth && contents.length() < maxNumChars)
+    {
       contents=contents+k;
     }
   }
@@ -1329,6 +1353,8 @@ class TextInputBox extends Widget {
   void setText(String s) {
     contents = s;
   }
+  
+  void setMaxChars(int n) { maxNumChars = n; if(contents.length() > maxNumChars) contents = contents.substring(n);} // set max chars post-init
 
   public void drawMe() {
     pushStyle();
